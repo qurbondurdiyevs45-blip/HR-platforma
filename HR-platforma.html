@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career Hub - Kelajak Kasblari</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #020617; color: #f8fafc; }
+        .job-card { background: linear-gradient(145deg, rgba(30, 41, 59, 0.4), rgba(15, 23, 42, 0.6)); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .job-card:hover { border-color: #6366f1; transform: translateY(-5px); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .salary-badge { background: rgba(34, 197, 94, 0.1); color: #4ade80; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useMemo } = React;
+
+        const JOBS_DATABASE = [
+            { id: 1, title: "Frontend Dasturchi", category: "IT", salary: "$1500 - $4000", skills: ["HTML", "CSS", "JavaScript", "React"], demand: "Yuqori" },
+            { id: 2, title: "SMM Mutaxassisi", category: "Marketing", salary: "$500 - $1500", skills: ["Targeting", "Content Plan", "Copywriting"], demand: "O'rta" },
+            { id: 3, title: "Data Scientist", category: "IT", salary: "$2000 - $6000", skills: ["Python", "SQL", "Machine Learning"], demand: "Juda Yuqori" },
+            { id: 4, title: "Grafik Dizayner", category: "Dizayn", salary: "$600 - $2000", skills: ["Photoshop", "Illustrator", "Figma"], demand: "O'rta" },
+            { id: 5, title: "Logistika Menejeri", category: "Biznes", salary: "$800 - $2500", skills: ["CRM", "Muzokara", "Xalqaro aloqa"], demand: "Yuqori" },
+            { id: 6, title: "Kiberxavfsizlik Mutaxassisi", category: "IT", salary: "$1800 - $5000", skills: ["Networking", "Linux", "Ethical Hacking"], demand: "Juda Yuqori" },
+            { id: 7, title: "Project Manager", category: "Menejment", salary: "$1000 - $3500", skills: ["Agile", "Scrum", "Trello"], demand: "Yuqori" },
+            { id: 8, title: "Arxitektor", category: "Muhandislik", salary: "$700 - $3000", skills: ["AutoCAD", "3DsMax", "Chizma"], demand: "O'rta" }
+        ];
+
+        const App = () => {
+            const [search, setSearch] = useState("");
+            const [activeCategory, setActiveCategory] = useState("Hammasi");
+
+            const categories = ["Hammasi", ...new Set(JOBS_DATABASE.map(j => j.category))];
+
+            const filteredJobs = useMemo(() => {
+                return JOBS_DATABASE.filter(job => {
+                    const matchesSearch = job.title.toLowerCase().includes(search.toLowerCase()) || 
+                                          job.skills.some(s => s.toLowerCase().includes(search.toLowerCase()));
+                    const matchesCat = activeCategory === "Hammasi" || job.category === activeCategory;
+                    return matchesSearch && matchesCat;
+                });
+            }, [search, activeCategory]);
+
+            return (
+                <div className="min-h-screen pb-20">
+                    {/* Navigation */}
+                    <nav className="p-6 border-b border-white/5 flex justify-between items-center sticky top-0 bg-slate-950/80 backdrop-blur-xl z-50">
+                        <h1 className="text-2xl font-black bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent italic">
+                            CAREER.HUB
+                        </h1>
+                        <div className="text-xs text-slate-500 font-medium">Sardorbek Qurbondurdiyev | 2026</div>
+                    </nav>
+
+                    <main className="max-w-6xl mx-auto px-6 pt-12">
+                        <div className="text-center mb-12">
+                            <h2 className="text-4xl md:text-5xl font-extrabold mb-4">Kelajagingizni Tanlang</h2>
+                            <p className="text-slate-400 max-w-xl mx-auto text-sm">Kasblar bo'yicha eng so'nggi ma'lumotlar, maoshlar va kerakli texnologiyalar to'plami.</p>
+                        </div>
+
+                        {/* Search & Filter */}
+                        <div className="flex flex-col gap-6 mb-12">
+                            <input 
+                                type="text" 
+                                placeholder="Kasb nomi yoki ko'nikma (masalan: Python)..." 
+                                className="w-full bg-slate-900/50 border border-white/10 rounded-2xl py-4 px-6 outline-none focus:border-indigo-500 transition-all text-lg"
+                                onChange={(e) => setSearch(e.target.value)}
+                            />
+                            <div className="flex flex-wrap gap-2">
+                                {categories.map(cat => (
+                                    <button 
+                                        key={cat}
+                                        onClick={() => setActiveCategory(cat)}
+                                        className={`px-5 py-2 rounded-full text-sm font-semibold transition-all ${activeCategory === cat ? 'bg-indigo-600 text-white' : 'bg-slate-900 text-slate-400 hover:bg-slate-800'}`}
+                                    >
+                                        {cat}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Job Grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {filteredJobs.length > 0 ? filteredJobs.map(job => (
+                                <div key={job.id} className="job-card p-6 rounded-3xl flex flex-col justify-between">
+                                    <div>
+                                        <div className="flex justify-between items-center mb-4">
+                                            <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-400">{job.category}</span>
+                                            <span className="salary-badge px-3 py-1 rounded-lg text-xs font-bold">{job.salary}</span>
+                                        </div>
+                                        <h3 className="text-xl font-bold mb-4">{job.title}</h3>
+                                        <div className="flex flex-wrap gap-2 mb-6">
+                                            {job.skills.map(skill => (
+                                                <span key={skill} className="bg-white/5 px-2 py-1 rounded text-[10px] text-slate-300 border border-white/5">
+                                                    {skill}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div className="pt-4 border-t border-white/5 flex justify-between items-center">
+                                        <span className="text-xs text-slate-500">Talab: <b className="text-slate-300">{job.demand}</b></span>
+                                        <button className="text-indigo-400 text-sm font-bold hover:underline">Batafsil →</button>
+                                    </div>
+                                </div>
+                            )) : (
+                                <div className="col-span-full py-20 text-center bg-white/5 rounded-3xl border border-dashed border-white/10">
+                                    <p className="text-slate-500">Bunday kasb topilmadi...</p>
+                                </div>
+                            )}
+                        </div>
+                    </main>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
